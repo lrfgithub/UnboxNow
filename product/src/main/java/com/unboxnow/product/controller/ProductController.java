@@ -1,7 +1,7 @@
 package com.unboxnow.product.controller;
 
-import UnboxNow.product.dto.ProductDTO;
-import UnboxNow.product.service.ProductService;
+import com.unboxnow.product.dto.ProductDTO;
+import com.unboxnow.product.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

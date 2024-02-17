@@ -1,7 +1,7 @@
 package com.unboxnow.product.controller;
 
-import UnboxNow.product.dto.BrandDTO;
-import UnboxNow.product.service.BrandService;
+import com.unboxnow.product.dto.BrandDTO;
+import com.unboxnow.product.service.BrandService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
