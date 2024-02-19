@@ -114,7 +114,7 @@ order-clean-job:
 order-build-job:
   stage: order-build
   script:
-    - cd user
+    - cd order
     - mvn package -DskipTests=true
     - mv target/order-1.0.0.jar 05-order-v1.jar
     - docker build -t 05-order-v1 .
