@@ -1,4 +1,4 @@
-package com.unboxnow.common.handler;
+package com.unboxnow.user.handler;
 
 import com.unboxnow.common.exception.*;
 import jakarta.validation.ConstraintViolationException;

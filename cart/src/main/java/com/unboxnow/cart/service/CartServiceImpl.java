@@ -15,6 +15,7 @@ import com.unboxnow.common.exception.NotFoundException;
 import com.unboxnow.common.message.ContainerMessage;
 import com.unboxnow.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -37,10 +38,10 @@ public class CartServiceImpl implements CartService {
     private final Producer producer;
 
     @Autowired
-    public CartServiceImpl(RedisTemplate<String, String> cartRedisTemplate,
-                           RedisTemplate<String, String> productRedisTemplate,
-                           RedisTemplate<String, String> memberRedisTemplate,
-                           RedisTemplate<String, String> inventoryRedisTemplate,
+    public CartServiceImpl(@Qualifier("cartRedisTemplate") RedisTemplate<String, String> cartRedisTemplate,
+                           @Qualifier("productRedisTemplate") RedisTemplate<String, String> productRedisTemplate,
+                           @Qualifier("memberRedisTemplate") RedisTemplate<String, String> memberRedisTemplate,
+                           @Qualifier("inventoryRedisTemplate") RedisTemplate<String, String> inventoryRedisTemplate,
                            Producer producer) {
         this.cartOps = cartRedisTemplate.opsForHash();
         this.productOps = productRedisTemplate.opsForHash();

@@ -10,6 +10,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.unboxnow.common.constant.Token;
 import com.unboxnow.common.exception.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +26,8 @@ public class JWTProvider {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired
-    public JWTProvider(RedisTemplate<String, String> stringRedisTemplate) {
-        this.redisTemplate = stringRedisTemplate;
+    public JWTProvider(@Qualifier("stringRedisTemplate") RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     public String generateAccessToken(int memberId, List<String> roles) {

@@ -10,6 +10,7 @@ import com.unboxnow.common.message.ConfirmationMessage;
 import com.unboxnow.common.message.Message;
 import com.unboxnow.common.message.RetrieverMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -31,9 +32,9 @@ public class RedisRespondProcessor {
     @Autowired
     public RedisRespondProcessor(ThreadPoolTaskExecutor threadTaskExecutor,
                                  CartService cartService,
-                                 RedisTemplate<String, String> productRedisTemplate,
-                                 RedisTemplate<String, String> memberRedisTemplate,
-                                 RedisTemplate<String, String> inventoryRedisTemplate) {
+                                 @Qualifier("productRedisTemplate") RedisTemplate<String, String> productRedisTemplate,
+                                 @Qualifier("memberRedisTemplate") RedisTemplate<String, String> memberRedisTemplate,
+                                 @Qualifier("inventoryRedisTemplate") RedisTemplate<String, String> inventoryRedisTemplate) {
         this.threadTaskExecutor = threadTaskExecutor;
         this.cartService = cartService;
         this.productOps = productRedisTemplate.opsForHash();

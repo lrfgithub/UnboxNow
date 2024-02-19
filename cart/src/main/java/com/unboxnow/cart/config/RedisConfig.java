@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unboxnow.cart.messaging.RedisListener;
 import com.unboxnow.common.constant.Topic;
 import com.unboxnow.common.entity.ProductItem;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -139,11 +140,11 @@ public class RedisConfig {
 
     @Bean
     public RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                                   MessageListenerAdapter productCheckAdapter,
-                                                   MessageListenerAdapter productUpdateAdapter,
-                                                   MessageListenerAdapter memberCheckAdapter,
-                                                   MessageListenerAdapter memberUpdateAdapter,
-                                                   MessageListenerAdapter inventoryCheckAdapter){
+                                                   @Qualifier("productCheckAdapter") MessageListenerAdapter productCheckAdapter,
+                                                   @Qualifier("productUpdateAdapter") MessageListenerAdapter productUpdateAdapter,
+                                                   @Qualifier("memberCheckAdapter") MessageListenerAdapter memberCheckAdapter,
+                                                   @Qualifier("memberUpdateAdapter") MessageListenerAdapter memberUpdateAdapter,
+                                                   @Qualifier("inventoryCheckAdapter") MessageListenerAdapter inventoryCheckAdapter){
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(productCheckAdapter, new PatternTopic(
