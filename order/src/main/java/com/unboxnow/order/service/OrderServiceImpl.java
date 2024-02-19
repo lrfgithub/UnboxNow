@@ -16,6 +16,7 @@ import com.unboxnow.order.entity.Order;
 import com.unboxnow.order.entity.OrderItem;
 import com.unboxnow.order.messaging.Producer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     public OrderServiceImpl(OrderRepo orderRepo,
                             OrderItemRepo orderItemRepo,
-                            RedisTemplate<String, String> orderRedisTemplate,
+                            @Qualifier("orderRedisTemplate") RedisTemplate<String, String> orderRedisTemplate,
                             Producer producer) {
         this.orderRepo = orderRepo;
         this.orderItemRepo = orderItemRepo;

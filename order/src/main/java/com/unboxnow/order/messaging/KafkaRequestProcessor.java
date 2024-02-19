@@ -16,6 +16,7 @@ import com.unboxnow.order.dto.OrderItemDTO;
 import com.unboxnow.order.service.OrderItemService;
 import com.unboxnow.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -39,8 +40,8 @@ public class KafkaRequestProcessor {
     @Autowired
     public KafkaRequestProcessor(OrderService orderService,
                                  OrderItemService orderItemService,
-                                 RedisTemplate<String, String> preorderRedisTemplate,
-                                 RedisTemplate<String, String> orderRedisTemplate,
+                                 @Qualifier("preorderRedisTemplate") RedisTemplate<String, String> preorderRedisTemplate,
+                                 @Qualifier("orderRedisTemplate") RedisTemplate<String, String> orderRedisTemplate,
                                  Producer producer) {
         this.orderService = orderService;
         this.orderItemService = orderItemService;
