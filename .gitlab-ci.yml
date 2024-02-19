@@ -14,6 +14,7 @@ clean-job:
 build-job:
   stage: build
   script:
+    - cd product
     - mvn package -DskipTests=true
     - mv target/product-1.0.0.jar 01-product-v1.jar
     - docker build -t 01-product-v1 .
