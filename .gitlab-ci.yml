@@ -1,4 +1,5 @@
 stages:
+  - common-prepare
   - product-clean
   - product-build
   - product-deploy
@@ -14,6 +15,13 @@ stages:
   - order-clean
   - order-build
   - order-deploy
+
+common-prepare-job:
+  stage: common-prepare
+  script:
+    - mvn clean
+    - cd common
+    - mvn install
 
 product-clean-job:
   stage: product-clean
