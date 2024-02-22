@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
         Map<String, String> map = new HashMap<>();
         log.error(ex.getMessage());
         map.put("msg", ex.getMessage());
-        return new ResponseEntity<>(map, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MaxQuantityException.class)
@@ -154,6 +154,14 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         map.put("msg", ex.getMessage());
         return new ResponseEntity<>(map, HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<Object> handleNotAuthorized(NotAuthorizedException ex) {
+        Map<String, String> map = new HashMap<>();
+        log.error(ex.getMessage());
+        map.put("msg", ex.getMessage());
+        return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -185,6 +193,6 @@ public class GlobalExceptionHandler {
         Map<String, String> map = new HashMap<>();
         log.error(ex.getMessage());
         map.put("msg", ex.getMessage());
-        return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 }

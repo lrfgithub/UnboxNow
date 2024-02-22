@@ -35,7 +35,7 @@ public class AuthorizationFilter implements Filter {
             boolean isCustomer = Authorization.Role.isCustomer(roles);
             JWTProvider.exists(token, Token.ACCESS);
             if (Authorization.getCalibrationCode(authorization, isCustomer) == 1) {
-                int memberId = JWTProvider.getMemberId(token);
+                int memberId = JWTProvider.getMemberId(token, Token.ACCESS);
                 String body = wrapper.getBodyString();
                 ObjectMapper mapper = new ObjectMapper();
                 MemberAddressDTO dto = mapper.readValue(body, MemberAddressDTO.class);

@@ -88,10 +88,10 @@ public class JWTProvider {
 
     public void verifyAccessAndRefreshTokens(String accessToken, String refreshToken, int memberId) {
         if (!accessToken.equals(getTokenFromRedis(memberId, Token.ACCESS))) {
-            throw new TokenException("fail to verify " + Token.ACCESS.getHeaderKey());
+            throw new TokenException(Token.ACCESS, "fail to fetch or validate token on Redis");
         }
         if (!refreshToken.equals(getTokenFromRedis(memberId, Token.REFRESH))) {
-            throw new TokenException("fail to verify " + Token.REFRESH.getHeaderKey());
+            throw new TokenException(Token.REFRESH, "fail to fetch or validate token on Redis");
         }
         try {
             verifyToken(accessToken, Token.ACCESS);
@@ -109,30 +109,25 @@ public class JWTProvider {
                         Token.REFRESH.getRedisExpiry(),
                         TimeUnit.MINUTES);
             } catch (TokenExpiredException refreshEx) {
-                throw new TokenException("expired");
+                throw new TokenException(Token.REFRESH, "expired");
             } catch (JWTVerificationException ex) {
-                throw new TokenException("fail to verify " + Token.REFRESH.getHeaderKey());
+                throw new TokenException(Token.REFRESH, "fail to validate");
             }
         } catch (JWTVerificationException ex) {
-            throw new TokenException("fail to verify " + Token.ACCESS.getHeaderKey());
+            throw new TokenException(Token.ACCESS, "fail to validate");
         }
-    }
-
-    public void verifyAccessAndRefreshTokens(String accessToken, String refreshToken) {
-        int memberId = getMemberId(accessToken, refreshToken);
-        verifyAccessAndRefreshTokens(accessToken, refreshToken, memberId);
     }
 
     public void verifyResetToken(String resetToken, int memberId) {
         if (!resetToken.equals(getTokenFromRedis(memberId, Token.RESET))) {
-            throw new TokenException("fail to verify " + Token.RESET.getHeaderKey());
+            throw new TokenException(Token.RESET, "fail to fetch or validate token on Redis");
         }
         try {
             verifyToken(resetToken, Token.RESET);
         } catch (TokenExpiredException ex) {
-            throw new TokenException("expired");
+            throw new TokenException(Token.RESET, "expired");
         } catch (JWTVerificationException ex) {
-            throw new TokenException("fail to verify " + Token.RESET.getHeaderKey());
+            throw new TokenException(Token.RESET, "fail to validate");
         }
     }
 
@@ -141,7 +136,7 @@ public class JWTProvider {
         try {
             roles = JWT.decode(accessToken).getClaims().get("roles").asList(String.class);
         } catch (JWTDecodeException ex) {
-            throw new TokenException("fail to decode");
+            throw new TokenException(Token.ACCESS, "fail to decode");
         }
         return roles;
     }
@@ -149,7 +144,7 @@ public class JWTProvider {
     public List<String> getRolesById(int memberId) {
         String token = getTokenFromRedis(memberId, Token.ACCESS);
         if (token == null) {
-            throw new TokenException("expired");
+            throw new TokenException(Token.ACCESS, "fail to fetch token on Redis");
         }
         return getRolesByToken(token);
     }
@@ -161,32 +156,25 @@ public class JWTProvider {
 
     public static void exists(String token, Token tokenType) {
         if (token == null || token.isEmpty()) {
-            throw new TokenException(tokenType.getHeaderKey() + " not found");
+            throw new TokenException(tokenType, "null or empty");
         }
     }
 
     public static int getMemberId(String accessToken, String refreshToken) {
-        int memberId;
-        try {
-            int accessMemberId = Integer.parseInt(JWT.decode(accessToken).getAudience().get(0));
-            int refreshMemberId = Integer.parseInt(JWT.decode(refreshToken).getAudience().get(0));
-            if (accessMemberId != refreshMemberId) {
-                throw new TokenException("fail to verify memberId");
-            } else {
-                memberId = accessMemberId;
-            }
-        } catch (JWTDecodeException ex) {
-            throw new TokenException("fail to decode");
+        int accessMemberId = getMemberId(accessToken, Token.ACCESS);
+        int refreshMemberId = getMemberId(refreshToken,Token.REFRESH);
+        if (accessMemberId != refreshMemberId) {
+            throw new TokenException();
         }
-        return memberId;
+        return accessMemberId;
     }
 
-    public static int getMemberId(String token) {
+    public static int getMemberId(String token, Token tokenType) {
         int memberId;
         try {
             memberId = Integer.parseInt(JWT.decode(token).getAudience().get(0));
         } catch (JWTDecodeException ex) {
-            throw new TokenException("fail to decode");
+            throw new TokenException(tokenType, "fail to decode");
         }
         return memberId;
     }

@@ -1,107 +1,107 @@
 stages:
-#  - product-clean
-#  - product-build
-#  - product-deploy
-#  - cart-clean
-#  - cart-build
-#  - cart-deploy
-#  - inventory-clean
-#  - inventory-build
-#  - inventory-deploy
-#  - user-clean
-#  - user-build
-#  - user-deploy
+  - product-clean
+  - product-build
+  - product-deploy
+  - cart-clean
+  - cart-build
+  - cart-deploy
+  - inventory-clean
+  - inventory-build
+  - inventory-deploy
+  - user-clean
+  - user-build
+  - user-deploy
   - order-clean
   - order-build
   - order-deploy
 
-#product-clean-job:
-#  stage: product-clean
-#  script:
-#    - docker rm -f 01-product-v1
-#    - docker rmi -f 01-product-v1
-#    - cd product
-#    - mvn clean
-#
-#product-build-job:
-#  stage: product-build
-#  script:
-#    - cd product
-#    - mvn package -DskipTests=true
-#    - mv target/product-1.0.0.jar 01-product-v1.jar
-#    - docker build -t 01-product-v1 .
-#    - rm 01-product-v1.jar
-#
-#product-deploy-job:
-#  stage: product-deploy
-#  script:
-#    - docker run -di --network unbownow_default --name 01-product-v1 -p 8601:8080 -e TZ=America/Los_Angeles 01-product-v1
-#
-#cart-clean-job:
-#  stage: cart-clean
-#  script:
-#    - docker rm -f 02-cart-v1
-#    - docker rmi -f 02-cart-v1
-#    - cd cart
-#    - mvn clean
-#
-#cart-build-job:
-#  stage: cart-build
-#  script:
-#    - cd cart
-#    - mvn package -DskipTests=true
-#    - mv target/cart-1.0.0.jar 02-cart-v1.jar
-#    - docker build -t 02-cart-v1 .
-#    - rm 02-cart-v1.jar
-#
-#cart-deploy-job:
-#  stage: cart-deploy
-#  script:
-#    - docker run -di --network unbownow_default --name 02-cart-v1 -p 8602:8080 -e TZ=America/Los_Angeles 02-cart-v1
-#
-#inventory-clean-job:
-#  stage: inventory-clean
-#  script:
-#    - docker rm -f 03-inventory-v1
-#    - docker rmi -f 03-inventory-v1
-#    - cd inventory
-#    - mvn clean
-#
-#inventory-build-job:
-#  stage: inventory-build
-#  script:
-#    - cd inventory
-#    - mvn package -DskipTests=true
-#    - mv target/inventory-1.0.0.jar 03-inventory-v1.jar
-#    - docker build -t 03-inventory-v1 .
-#    - rm 03-inventory-v1.jar
-#
-#inventory-deploy-job:
-#  stage: inventory-deploy
-#  script:
-#    - docker run -di --network unbownow_default --name 03-inventory-v1 -p 8603:8080 -e TZ=America/Los_Angeles 03-inventory-v1
-#
-#user-clean-job:
-#  stage: user-clean
-#  script:
-#    - docker rm -f 04-user-v1
-#    - docker rmi -f 04-user-v1
-#    - cd user
-#    - mvn clean
-#
-#user-build-job:
-#  stage: user-build
-#  script:
-#    - cd user
-#    - mvn package -DskipTests=true
-#    - mv target/user-1.0.0.jar 04-user-v1.jar
-#    - docker build -t 04-user-v1 .
-#    - rm 04-user-v1.jar
-#
-#user-deploy-job:
-#  stage: user-deploy
-#  script:
-#    - docker run -di --network unbownow_default --name 04-user-v1 -p 8604:8080 -e TZ=America/Los_Angeles 04-user-v1
+product-clean-job:
+  stage: product-clean
+  script:
+    - docker rm -f 01-product-v1
+    - docker rmi -f 01-product-v1
+    - cd product
+    - mvn clean
+
+product-build-job:
+  stage: product-build
+  script:
+    - cd product
+    - mvn package -DskipTests=true
+    - mv target/product-1.0.0.jar 01-product-v1.jar
+    - docker build -t 01-product-v1 .
+    - rm 01-product-v1.jar
+
+product-deploy-job:
+  stage: product-deploy
+  script:
+    - docker run -di --network unbownow_default --name 01-product-v1 -p 8601:8080 -e TZ=America/Los_Angeles 01-product-v1
+
+cart-clean-job:
+  stage: cart-clean
+  script:
+    - docker rm -f 02-cart-v1
+    - docker rmi -f 02-cart-v1
+    - cd cart
+    - mvn clean
+
+cart-build-job:
+  stage: cart-build
+  script:
+    - cd cart
+    - mvn package -DskipTests=true
+    - mv target/cart-1.0.0.jar 02-cart-v1.jar
+    - docker build -t 02-cart-v1 .
+    - rm 02-cart-v1.jar
+
+cart-deploy-job:
+  stage: cart-deploy
+  script:
+    - docker run -di --network unbownow_default --name 02-cart-v1 -p 8602:8080 -e TZ=America/Los_Angeles 02-cart-v1
+
+inventory-clean-job:
+  stage: inventory-clean
+  script:
+    - docker rm -f 03-inventory-v1
+    - docker rmi -f 03-inventory-v1
+    - cd inventory
+    - mvn clean
+
+inventory-build-job:
+  stage: inventory-build
+  script:
+    - cd inventory
+    - mvn package -DskipTests=true
+    - mv target/inventory-1.0.0.jar 03-inventory-v1.jar
+    - docker build -t 03-inventory-v1 .
+    - rm 03-inventory-v1.jar
+
+inventory-deploy-job:
+  stage: inventory-deploy
+  script:
+    - docker run -di --network unbownow_default --name 03-inventory-v1 -p 8603:8080 -e TZ=America/Los_Angeles 03-inventory-v1
+
+user-clean-job:
+  stage: user-clean
+  script:
+    - docker rm -f 04-user-v1
+    - docker rmi -f 04-user-v1
+    - cd user
+    - mvn clean
+
+user-build-job:
+  stage: user-build
+  script:
+    - cd user
+    - mvn package -DskipTests=true
+    - mv target/user-1.0.0.jar 04-user-v1.jar
+    - docker build -t 04-user-v1 .
+    - rm 04-user-v1.jar
+
+user-deploy-job:
+  stage: user-deploy
+  script:
+    - docker run -di --network unbownow_default --name 04-user-v1 -p 8604:8080 -e TZ=America/Los_Angeles 04-user-v1
 
 order-clean-job:
   stage: order-clean

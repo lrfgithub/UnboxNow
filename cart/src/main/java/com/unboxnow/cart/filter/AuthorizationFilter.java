@@ -31,7 +31,7 @@ public class AuthorizationFilter implements Filter {
         if (Authorization.isCalibrationRequired(authorization)) {
             String token = wrapper.getHeader(Token.ACCESS.getHeaderKey());
             JWTProvider.exists(token, Token.ACCESS);
-            int memberId = JWTProvider.getMemberId(token);
+            int memberId = JWTProvider.getMemberId(token, Token.ACCESS);
             String body = wrapper.getBodyString();
             ObjectMapper mapper = new ObjectMapper();
             CartItemDTO dto = mapper.readValue(body, CartItemDTO.class);

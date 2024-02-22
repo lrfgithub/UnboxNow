@@ -2,7 +2,7 @@ package com.unboxnow.product.interceptor;
 
 import com.unboxnow.common.component.JWTProvider;
 import com.unboxnow.common.constant.Token;
-import com.unboxnow.common.exception.LoginException;
+import com.unboxnow.common.exception.NotAuthorizedException;
 import com.unboxnow.product.constant.Authorization;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,7 +39,7 @@ public class JWTInterceptor implements HandlerInterceptor {
         String url = String.valueOf(request.getRequestURL());
         List<String> roles = JWTProvider.getRolesByToken(accessToken);
         if (!Authorization.isAuthorized(method, url, roles)) {
-            throw new LoginException(memberId, "not authorized");
+            throw new NotAuthorizedException(memberId);
         }
         response.addHeader(Token.ACCESS.getHeaderKey(), accessToken);
         response.addHeader(Token.REFRESH.getHeaderKey(), refreshToken);
