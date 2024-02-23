@@ -17,7 +17,7 @@ The UnboxNow backend is the backbone of an e-commerce platform, serving customer
 
 - Language: Java
 - Web framework: **Spring Boot**
-- DataBase: **MySQL** (JDBC connects Java and database), **H2** (for testing), **Redis**
+- DataBase: **MySQL** (Hibernate), NoSQL(Redis), **H2** (for testing)
 - Cache: **Redis**
 - Message queue: **Apache Kafka** and **Redis**
 - Security: tokens (JSON Web Token, **JWT**) for global authentication and role-based authorization, and **Spring security**
