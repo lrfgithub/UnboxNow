@@ -33,7 +33,6 @@ public class AuthorizationFilter implements Filter {
             String token = wrapper.getHeader(Token.ACCESS.getHeaderKey());
             List<String> roles = JWTProvider.getRolesByToken(token);
             boolean isCustomer = Authorization.Role.isCustomer(roles);
-            JWTProvider.exists(token, Token.ACCESS);
             if (Authorization.getCalibrationCode(authorization, isCustomer) == 1) {
                 int memberId = JWTProvider.getMemberId(token, Token.ACCESS);
                 String body = wrapper.getBodyString();

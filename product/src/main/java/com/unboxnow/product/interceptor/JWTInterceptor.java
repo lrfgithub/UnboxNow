@@ -13,6 +13,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 @ComponentScan(basePackages = {"com.unboxnow.common.component"})
@@ -32,9 +33,10 @@ public class JWTInterceptor implements HandlerInterceptor {
         }
         String accessToken = request.getHeader(Token.ACCESS.getHeaderKey());
         String refreshToken = request.getHeader(Token.REFRESH.getHeaderKey());
-        JWTProvider.exist(accessToken, refreshToken);
         int memberId = JWTProvider.getMemberId(accessToken, refreshToken);
-        jwtProvider.verifyAccessAndRefreshTokens(accessToken, refreshToken, memberId);
+        Map<String, String> tokens = jwtProvider.verifyAccessAndRefreshTokens(accessToken, refreshToken, memberId);
+        accessToken = tokens.get(Token.ACCESS.getHeaderKey());
+        refreshToken = tokens.get(Token.REFRESH.getHeaderKey());
         String method = request.getMethod();
         String url = String.valueOf(request.getRequestURL());
         List<String> roles = JWTProvider.getRolesByToken(accessToken);

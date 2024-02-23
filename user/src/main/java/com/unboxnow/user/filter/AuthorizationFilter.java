@@ -37,13 +37,11 @@ public class AuthorizationFilter implements Filter {
             int memberId;
             if (authorization == Authorization.RESET_PASSWORD) {
                 token = Authorization.getValueFromUrl(authorization, url);
-                JWTProvider.exists(token, Token.RESET);
                 memberId = JWTProvider.getMemberId(token, Token.RESET);
             } else {
                 token = wrapper.getHeader(Token.ACCESS.getHeaderKey());
                 List<String> roles = JWTProvider.getRolesByToken(token);
                 isCustomer = Authorization.Role.isCustomer(roles);
-                JWTProvider.exists(token, Token.ACCESS);
                 memberId = JWTProvider.getMemberId(token, Token.ACCESS);
             }
             String body = wrapper.getBodyString();

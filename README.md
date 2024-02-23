@@ -11,7 +11,7 @@ The UnboxNow backend is the backbone of an e-commerce platform, serving customer
 - [Tech stack](#3-tech-stack)
 - [Architecture](#4-architecture)
 - [Features](#5-features)
-- [API documentation](#6-api-documentation)
+<!-- - [API documentation](#6-api-documentation) -->
 
 ## 3. Tech stack
 
@@ -21,7 +21,8 @@ The UnboxNow backend is the backbone of an e-commerce platform, serving customer
 - Cache: **Redis**
 - Message queue: **Apache Kafka** and **Redis**
 - Security: tokens (JSON Web Token, **JWT**) for global authentication and role-based authorization, and **Spring security**
-- Development: **CI/CD** (GitLab), **Docker**
+- Development: **CI/CD** (GitLab)
+- Deployment: **Docker**
 
 ## 4. Architecture
 

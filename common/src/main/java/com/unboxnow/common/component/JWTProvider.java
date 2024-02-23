@@ -6,7 +6,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.unboxnow.common.constant.Token;
 import com.unboxnow.common.exception.TokenException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -68,46 +69,35 @@ public class JWTProvider {
     }
 
     public String updateAccessToken(String oldToken) {
-        DecodedJWT decoded = JWT.decode(oldToken);
-        int memberId = Integer.parseInt(decoded.getAudience().get(0));
+        int memberId = getMemberId(oldToken, Token.ACCESS);
         List<String> roles = getRolesByToken(oldToken);
         return generateAccessToken(memberId, roles);
     }
 
-    private static void verifyToken(String token, Token tokenType) {
-        switch (tokenType) {
-            case ACCESS -> JWT.require(Algorithm.HMAC256(Token.ACCESS.getSecret())).build().verify(token);
-            case REFRESH -> JWT.require(Algorithm.HMAC256(Token.REFRESH.getSecret())).build().verify(token);
-            case RESET -> JWT.require(Algorithm.HMAC256(Token.RESET.getSecret())).build().verify(token);
+    private String fetchToken(int memberId, Token tokenType) {
+        String token = redisTemplate.opsForValue().get(tokenType.getRedisKey(memberId));
+        if (token == null || token.isEmpty()) {
+            throw new TokenException(tokenType, "fail to fetch token on Redis");
+        }
+        return token;
+    }
+
+    private void fetchAndValidate(String token, int memberId, Token tokenType) {
+        exists(token, tokenType);
+        String tokenOnRedis = fetchToken(memberId, tokenType);
+        if (!token.equals(tokenOnRedis)) {
+            throw new TokenException(tokenType, "fail to validate token on Redis");
         }
     }
 
-    public String getTokenFromRedis(int memberId, Token tokenType) {
-        return redisTemplate.opsForValue().get(tokenType.getRedisKey(memberId));
-    }
-
-    public void verifyAccessAndRefreshTokens(String accessToken, String refreshToken, int memberId) {
-        if (!accessToken.equals(getTokenFromRedis(memberId, Token.ACCESS))) {
-            throw new TokenException(Token.ACCESS, "fail to fetch or validate token on Redis");
-        }
-        if (!refreshToken.equals(getTokenFromRedis(memberId, Token.REFRESH))) {
-            throw new TokenException(Token.REFRESH, "fail to fetch or validate token on Redis");
-        }
+    public Map<String, String> verifyAccessAndRefreshTokens(String accessToken, String refreshToken, int memberId) {
+        fetchAndValidate(accessToken, memberId, Token.ACCESS);
+        fetchAndValidate(refreshToken, memberId, Token.REFRESH);
         try {
-            verifyToken(accessToken, Token.ACCESS);
+            JWT.require(Algorithm.HMAC256(Token.ACCESS.getSecret())).build().verify(accessToken);
         } catch (TokenExpiredException accessEx) {
             try {
-                verifyToken(refreshToken, Token.REFRESH);
-                accessToken = updateAccessToken(accessToken);
-                redisTemplate.opsForValue().set(Token.ACCESS.getRedisKey(memberId), accessToken);
-                redisTemplate.expire(Token.ACCESS.getRedisKey(memberId),
-                        Token.ACCESS.getRedisExpiry(),
-                        TimeUnit.MINUTES);
-                refreshToken = generateRefreshToken(memberId);
-                redisTemplate.opsForValue().set(Token.REFRESH.getRedisKey(memberId), refreshToken);
-                redisTemplate.expire(Token.REFRESH.getRedisKey(memberId),
-                        Token.REFRESH.getRedisExpiry(),
-                        TimeUnit.MINUTES);
+                JWT.require(Algorithm.HMAC256(Token.REFRESH.getSecret())).build().verify(refreshToken);
             } catch (TokenExpiredException refreshEx) {
                 throw new TokenException(Token.REFRESH, "expired");
             } catch (JWTVerificationException ex) {
@@ -116,14 +106,16 @@ public class JWTProvider {
         } catch (JWTVerificationException ex) {
             throw new TokenException(Token.ACCESS, "fail to validate");
         }
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put(Token.ACCESS.getHeaderKey(), updateAccessToken(accessToken));
+        tokens.put(Token.REFRESH.getHeaderKey(), generateRefreshToken(memberId));
+        return tokens;
     }
 
     public void verifyResetToken(String resetToken, int memberId) {
-        if (!resetToken.equals(getTokenFromRedis(memberId, Token.RESET))) {
-            throw new TokenException(Token.RESET, "fail to fetch or validate token on Redis");
-        }
+        fetchAndValidate(resetToken, memberId, Token.RESET);
         try {
-            verifyToken(resetToken, Token.RESET);
+            JWT.require(Algorithm.HMAC256(Token.RESET.getSecret())).build().verify(resetToken);
         } catch (TokenExpiredException ex) {
             throw new TokenException(Token.RESET, "expired");
         } catch (JWTVerificationException ex) {
@@ -132,6 +124,7 @@ public class JWTProvider {
     }
 
     public static List<String> getRolesByToken(String accessToken) {
+        exists(accessToken, Token.ACCESS);
         List<String> roles;
         try {
             roles = JWT.decode(accessToken).getClaims().get("roles").asList(String.class);
@@ -142,19 +135,10 @@ public class JWTProvider {
     }
 
     public List<String> getRolesById(int memberId) {
-        String token = getTokenFromRedis(memberId, Token.ACCESS);
-        if (token == null) {
-            throw new TokenException(Token.ACCESS, "fail to fetch token on Redis");
-        }
-        return getRolesByToken(token);
+        return getRolesByToken(fetchToken(memberId, Token.ACCESS));
     }
 
-    public static void exist(String accessToken, String refreshToken) {
-        exists(accessToken, Token.ACCESS);
-        exists(refreshToken, Token.REFRESH);
-    }
-
-    public static void exists(String token, Token tokenType) {
+    private static void exists(String token, Token tokenType) {
         if (token == null || token.isEmpty()) {
             throw new TokenException(tokenType, "null or empty");
         }
@@ -170,13 +154,12 @@ public class JWTProvider {
     }
 
     public static int getMemberId(String token, Token tokenType) {
-        int memberId;
+        exists(token, tokenType);
         try {
-            memberId = Integer.parseInt(JWT.decode(token).getAudience().get(0));
+            return Integer.parseInt(JWT.decode(token).getAudience().get(0));
         } catch (JWTDecodeException ex) {
             throw new TokenException(tokenType, "fail to decode");
         }
-        return memberId;
     }
 
     public void clearAccessAndRefreshTokens(int memberId) {
